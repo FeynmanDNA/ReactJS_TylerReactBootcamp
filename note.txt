@@ -1,0 +1,160 @@
+from TylerMcGinnis ReactJS bootcamp April 2018
+
+Firstly, what is React?
+Think of React is a library for building UI (user interface). That is ALL IT DOES. 
+
+What makes React special?
+it came out in 2014, still popular
+Composition
+- composition is just like functions()
+Unidirectional Dataflow
+- in jQuery, event Handler updates the DOM, but in vanilla DOM and jQuery, quickly what happenes is the state, in the DOM, and states changes all over the place. There is not a lot of structure
+- in React, you still have the Event handlers, but instead of the state living inside the DOM, the state of the React application is going to be inside the individual componnets
+- The MOST special thing about React is that React is responsible for rendering the actual UI
+- Only think of 2 things: 1 what is the state of your component, 2 how is the component going to look based on that state
+Explicit Mutations
+- update the state is by this.setState();
+- State is just "data inside the application"
+- State == Data in your app
+- there is no "shared mutable state"
+Just Javascript
+- React does not has its own API, it is turning to what Javascript can already do
+
+Traditionally, setting up a react is unnecessarily difficult. webpack, babel, all that is not making the learning smooth.
+
+In the first exercise, we are not going to build a componnet, we will build something even lower, an Element
+
+React.createElement is going to create an object representation of the DOM node
+the React.createElement object has props, and type. and props is an Object!
+
+so this react object is an object for the DOM, how do we show it the UI?
+ReactDOM.render()
+
+so create an element with React.createElement, and render that element in the DOM using ReactDOM.render()
+
+React creates the object representation of the DOM and compare
+
+React.createElement vs React Component
+React Component is a function or a class that optionally accepts input
+and returns a React Element!
+what is nice about Component function is that you can pass values into
+this component
+and you can pass Component function as the first argument for
+React.createElement,too
+
+React is unnecessarily complicated just to build some rendered UI?
+well, think of React as an abstraction to make it easier to build UI.
+Why not just use HTML? HTML is designed for UI
+JSX along with babel can convert HTML in the return to
+React.createElement
+* must specify type='text/babel' in the script tag for babel js to work!
+So you are not putting HTML in your javascript, you are putting
+React.createElement objects to your javascript
+Babel transpile to regular javascript
+Unlike browser DOM elements, React elements are plain objects, and are
+cheap to create. React DOM takes care of updating the DOM to match the
+React elements.
+React.createElement(type, props/attributes, children);
+
+The most fundamental building block of React is react element
+
+Element VS Component
+Component just returns an element
+
+Getting data into components, we can do that via props
+
+Whenever you are thinking of components, there are two things you need
+to consider: 1. what the component is going to look like (UI) and 2. the
+state the component is going to manage
+
+What is nice about react is the component thinking, like functions. Even
+though the entire application is very complex, you can break it down to
+smaller managable chunks
+
+whenever you are creating arrays or using dotmap in React, you need to
+add a key props to the list
+React needs a key prop to know what changes to the list, they will
+compare the keys. So it is better for us to provide React the keys
+map just allows us to loop over an array, and run a function on each
+item
+using index for keys is bad
+
+Remember the definition of Component:
+React Component is a function or a class that optionally accepts input and returns a React Element!
+but you might be wondering where is there two ways to create component?
+one is the function way, other is the class way.
+if you want to have state that is managed by a react component, you can
+only use class component and not function component.
+when use a functional component, what i return is UI of the component,
+when using a class component, it can also give me the UI by the render()
+method.
+to make a state as an internal property of a component, we need to have
+constructor and whenever we set up a constructor we also need to call
+super
+whenever you use super along with constructor, it is going to invoke constructor of the class you are extending, which is the React.Component's constructor
+by using constructor and this.state, the state is now living inside the
+component instance
+you can think of functional component as the render part of the class
+component. So when you want to have state, you need more than functional
+component
+so the full name of the functional Component is stateless functional
+component
+state is local to a component, so a component can mange its own state
+props are when you pass data to a component
+
+where should state be when you have multiple components?
+what if there are multiple components that need that same state?
+(TBD)
+
+Why both React and ReactDOM package?
+what is cool about react is that you can render react in more than just
+DOM environment, like React Native, or xbox
+ReactDOM is rendering it to the DOM
+this.setState takes a callback that the first argument is the current
+state and returns an object that will be merged with the new state
+
+this.setState listens for state change, and update the UI
+React is going to re-render the UI, explicit mutation of the state,
+assuming user wants to see the updated state
+
+anytime you pass a function to setState, React is going to load that
+function and pass the current states to that function, this is built-in
+React stuff
+.map .filter .reduce are excellent tools for array manipulation
+
+for onClick, we need to pass a function definition, but a function
+location. so React can later decide what to do with the funcion onClick
+function location will invoke the function immediately
+
+this.setState is not a function ERROR
+whenever you see a this keyword in javascript, you need to ask what is
+this referring to? this.setState's this should be the component that has
+the state
+use .bind this.methodName = this.methodName.bind(this), so bind allows
+you to specify what this is going to refer to
+this is going to refer to the object, so the left of the dot
+if there is an object, that is what the this is referencing to
+props.func(), the object is props, but we dont want this to refer to
+props, we want it to refer to App component
+.bind(this) is going to force this to be the place you call .bind
+
+another way to not have to use .bind, but it is a stage-3 proposal, not
+part of the official specification yet, is:
+so instead of having a method here, you just have an arrow function as a
+method.
+
+difference between 
+this.setState({
+  key: value,
+})
+and 
+this.setState( () => (
+  {key:value}
+)) ?
+if you dont care about the previous states, just assign a new object to
+he state. 
+if you are updaing local state of the component based on the previous
+state, you need to use the functional setState
+
+.push will mutate the original array
+.concat will not modify the source array
