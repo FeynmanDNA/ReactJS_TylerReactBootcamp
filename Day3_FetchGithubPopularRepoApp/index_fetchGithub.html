@@ -1,0 +1,185 @@
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tyler Bootcamp Day3</title>
+    <link rel="shortcur icon" href="favicon.ico" />
+  </head>
+
+  <body>
+    <div id="app">
+    </div>
+
+    <!-- The UMD builds of React and ReactDOM are available over a CDN -->
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <!-- fake asynchronous data for fetching exercise-->
+    <script>
+      window.API = {
+        fetchPopularRepos(language) {
+        // "language" can "javascript", "c", "python", etc
+        // encodeURI() function encodes special characters
+        const encodedURI = encodeURI(`https://api.github.com/search/repositories?q=stars:>1+language:${language}&sort=stars&order=desc&type=Repositories`);
+
+        // fetch() returns a Promise that resolves
+        // to the Response to that request
+        return fetch(encodedURI)
+          .then((fetchedData) => fetchedData.json())
+          .then((afterJson) => afterJson.items)
+          .catch((error) => {console.warn(error);return null;});
+        }
+      };
+    </script>
+
+    <!-- raw script React as API -->
+    <script type='text/babel'>
+
+const InputField = (props) => {
+  return (
+    <div>
+      <input 
+        type="text"
+        placeholder="enter a language"
+        onChange={props.handleChange}
+      />
+      <button onClick={props.handleSubmit}>Submit</button>
+    </div>
+  );
+};
+
+class Loading extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      text: 'loading',
+    };
+    console.log('<Loading /> constructor');
+  }
+
+  componentDidMount() {
+    const stopper = `${this.state.text}...`;
+    this.interval = window.setInterval(() => {
+      console.log("setInterval is running");
+      this.state.text === stopper
+        ? this.setState({text: 'loading',})
+        : this.setState((currentState) => {
+            return {
+              text: currentState.text + '.',
+            };
+        })
+    }, 300);
+    console.log('<Loading /> componentDidMount');
+  }
+
+  componentWillUnmount() {
+    console.log('<Loading /> willUnmount');
+    window.clearInterval(this.interval);
+    console.log('setInterval has cleared');
+  }
+
+  render() {
+    return (
+      <p>{this.state.text}</p>
+    );
+  }
+}
+
+const FetchedData = (props) => {
+  console.log("call FetchedData");
+  return (
+    <ul style={{display: "flex", flexWrap: "wrap"}}>
+      {props.fetchedData.map( ({name, html_url, language, owner, stargazers_count}) => {
+        return(
+          <li key={name} style={{margin:30}}>
+            <ul>
+              <li><a href={html_url}>{name}</a></li>
+              <li>Written in: {language}</li>
+              <li>by: {owner.login}</li>
+              <li>Stars: {stargazers_count}</li>
+            </ul>
+          </li>
+        );
+      })}
+    </ul>
+  );
+};
+
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      languageSubmitted: '',
+      ReposData:[], 
+      loading: false,
+    };
+    console.log('--App constructor--');
+  }
+
+  componentDidMount() {
+    console.log('--App componentDidMount--');
+  }
+
+  componentDidUpdate() {
+    console.log('--App componentDidUpdate--');
+  }
+
+  componentWillUnmount() {
+    console.log('--App componentWillUnmount--');
+  }
+
+  ProcessInput = (event) => {
+    const value = event.target.value;
+    console.log("processInput record the value");
+    if (value === '') {
+      return this.setState({
+        languageSubmitted: '',
+      });
+    }
+    this.setState({
+      languageSubmitted: value,
+    });
+  }
+
+  SubmitQuery = () => {
+    console.log("SubmitQuery started, call API");
+    this.setState({
+      loading: true,
+    });
+    API.fetchPopularRepos(this.state.languageSubmitted)
+      .then((ajaxData) => {
+        console.log('API-PopularRepos', ajaxData);
+        this.setState({
+          ReposData: ajaxData, 
+          loading: false,
+        });
+      });
+  }
+
+  render() {
+    console.log('--App render--');
+
+    return (
+      <div>
+        <h2>What are the most popular Github Repos for a particular language?</h2>
+        <InputField 
+          handleChange={this.ProcessInput} 
+          handleSubmit={this.SubmitQuery} />
+        {this.state.loading === true
+          ? <Loading />
+          : <FetchedData fetchedData={this.state.ReposData} />}
+      </div>
+    );
+  };
+}
+
+ReactDOM.render(
+  <App />,
+  document.getElementById('app')
+);
+    </script>
+  </body>
+</html>

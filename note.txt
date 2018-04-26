@@ -158,3 +158,159 @@ state, you need to use the functional setState
 
 .push will mutate the original array
 .concat will not modify the source array
+
+when would we use Redux/Mobx for state management?
+you will know when you need it, cos you will be in some pain with states
+typically start out with component states, and if there are a bunch of
+components that are managing the same state or there is a need for
+cache, or API issues. Until then, component/state is enough
+
+Component LifeCycle
+like hooks you can base your activities upon
+a big thing we are going to talk about is fetching data
+first is a constructor(){} 
+the second most common method is componentDidMount(){}
+constructor is a JS thing, componentDidMount and render is a React
+thing. render allow you to establish the UI, render is what describes
+the UI for that component
+componentDidMount is called whenever the component is mounted into the
+DOM
+so first is contructor is gather the state, then render will create the
+DOM object, and componentDidMount will be called when the mounting is
+finished
+so componentDidMount is useful for ajax request because it is after the
+component is mounted
+the next one is componentDidUpdate, whenever the component receives new
+props or the state changes, it is updated
+for example, in the input field, when we type something, the state of
+the input field changes and the App component updates, and causes the
+re-render, and the state is changed, and thus componentDidUpdate
+Note: componentWillMount is deprecated, forget about componentWillMount
+When fetch data from other API, the recommended method is
+componentDidMount
+re-rendering is done smartly in React
+there is also componentWillUnmount, is invoked when the component is
+removed from the DOM, if for example, in React-Router and you change
+routes, React is going to remove the components that are mounted already
+and render brand new components, than componentWillUnmount will be
+called. Another case is when you have other applications like music
+player or memory taking programs in the component, and when you unmount
+that component you want to remove those memory-taking programs
+You dont need to bind LifeCycle methods, because React will do that for
+you. 
+In the super old times, when React first came out, the way you used to
+be able to create components when react first came out was with
+React.createClass(), .createClass will auto bind for you. so you didnt
+have to use .bind(), then they got rid of createClass and you have to
+use Class, and all of sudden, people are starting to learn this keyword
+and bind.
+
+if we need to fetch data, not from components, but from database. 
+we can simulate a server that provides the asynchronous data:
+window.API object
+window.API = {
+  fetchFriends() {
+    return new Promise((res, rej) => {
+      const friends = [
+        'Jordon',
+        'Mike',
+        'Bob'
+      ];
+      setTimeout( () => res(friends), 2000);
+    });
+  }
+};
+
+with Promise, we will use .then(), and 
+  componentDidMount() {
+    console.log('--componentDidMount--');
+    API.fetchFriends()
+      .then( (friends) => {
+        console.log('API-Friends', friends);
+      });
+  }
+
+we can create a state of loading to be true or false
+that renders either a loading or real content
+when the componentDidMount and setState, the render will be called
+again, the loading is now false
+
+when we are using state, and LifeCycle methods, we cannot just use
+stateless funcitonal components, we have to use class components 
+
+Error: when the component is Unmounting, we are still trying to call
+setStateon the loading component, which will cause memory leak
+
+A trick with react component LifeCycle is you can add the component a
+new
+property with this.XXX
+like this.interval = window.setInterval();
+
+Unmount is when React decide to no longer show it in the view
+
+To recap:
+we used componentDidMount to fetch the data ajax
+we used componentWillUnmount to clear the interval
+
+Loading Component is to display a loading view, it is good practice to
+let the users know you are fetching data
+
+componentDidUpdate (prevProps, prevState) {}
+componentDidUpdate is particularly useful with React.Router, because of
+the way ReactRouter works
+
+Mount is right after the initial render
+
+Always use componentDidMount when you want to fetch something, because
+if you want to fetch information when the component mount, use
+componentDidMount
+
+But if you want to fetch something later on, either when the component
+state changes or receives new prop, use componentDidUpdate to fetch
+
+the nice thing about react router is if you understand react component
+model, react router is pretty straight-forward
+
+ajax in the contructor is a bad taste and a bad idea, do ajax in
+componentDidMount
+
+If you know elements, components, props, states, LifeCycle, the is 85%
+of React. The rest are more advanced topics, but they are built on the
+85% fundations
+
+dynamic/conditional rendering is basically if this.state.loading === true, render this,
+if not render that (rendering based on state)
+
+When to use Redux?
+A good use case for Redux is Let's say we have some piece of data that
+more than one component needed. If we have a very big app, and not just
+the current pageview needs the data, let's say we have a bunch of other
+components that also need that information, that will be a good use case
+for redux
+Because what redux allows you to do, is instead of having a parent
+component fetching the data, you pass the data down as prop to some
+child component----- in redux, you can basically take the data, stick it
+inside redux, then any component that needs that data can basically grab
+it from redux
+
+in redux, the child components actively grab the data from the "store",
+and they are good to go
+
+Another good use is caching. if the request is expensive, if we dont
+want to keep making the request every time the component is mounted,
+what we can do is make the request once, and get all the really heavey
+and expensive slow data, stick it in redux, and then any time the
+component went back to that page, instead of fetching it from the server
+or the database, the page just grab it from redux
+
+Redux is more than global states, and it is uni-directional.
+
+think of redux as caching store, it is good for certain cases
+
+React is not built to just show json data to the view, a better way is
+to JSON.stringify it first. 
+
+The .map function is only available on array.
+It looks like data isn't in the format you are expecting it to be (it is {} but you are expecting []).
+Check what type "data" is being set to, and make sure that it is an array.
+
